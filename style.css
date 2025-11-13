@@ -115,6 +115,38 @@ body {
     transition: transform 0.3s ease;
 }
 
+/* Model Selector Styles */
+.model-selector {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+    min-width: 180px;
+    margin-right: 12px;
+}
+
+.model-selector:hover {
+    border-color: var(--accent-primary);
+    background: var(--bg-tertiary);
+}
+
+.model-selector:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.2);
+}
+
+.model-selector option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 8px;
+}
+
 /* Chat Messages */
 .chat-messages {
     flex: 1;

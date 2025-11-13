@@ -115,9 +115,9 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
             try {
-                // Отправляем запрос к AI через s.puter
-                const response = await puter.ai.chat(message, { 
-                    model: "moonshotai/kimi-k2" 
+                // Отправляем запрос к AI через s.puter с выбранной моделью
+                const response = await puter.ai.chat(message, {
+                    model: currentModel
                 });
                 
                 // Удаляем индикатор
@@ -150,6 +150,65 @@
         // Фокус на поле ввода при загрузке
         messageInput.focus();
 
+        // Model selection functionality
+        let currentModel = localStorage.getItem('selectedModel') || 'gpt-4o';
+        let availableModels = [];
+
+        // Function to get available models
+        function loadAvailableModels() {
+            // Updated list of available models from Puter AI API
+            availableModels = [
+                { id: 'gpt-4o', name: 'GPT-4o', provider: 'OpenAI' },
+                { id: 'gpt-4o-mini', name: 'GPT-4o Mini', provider: 'OpenAI' },
+                { id: 'claude-3-5-sonnet-latest', name: 'Claude 3.5 Sonnet', provider: 'Anthropic' },
+                { id: 'claude-3-5-haiku-20241022', name: 'Claude 3.5 Haiku', provider: 'Anthropic' },
+                { id: 'togetherai:moonshotai/Kimi-K2-Instruct', name: 'Kimi K2 Instruct', provider: 'MoonshotAI' },
+                { id: 'deepseek-chat', name: 'DeepSeek Chat', provider: 'DeepSeek' },
+                { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', provider: 'Google' },
+                { id: 'mistral-large-latest', name: 'Mistral Large', provider: 'Mistral' }
+            ];
+
+            return availableModels;
+        }
+
+        // Function to create model selector UI
+        function createModelSelector() {
+            const selector = document.createElement('select');
+            selector.id = 'modelSelector';
+            selector.className = 'model-selector';
+
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Загрузка моделей...';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            selector.appendChild(defaultOption);
+
+            // Load models and populate selector
+            const models = loadAvailableModels();
+            selector.innerHTML = ''; // Clear loading option
+
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.id;
+                option.textContent = `${model.name} (${model.provider})`;
+                if (model.id === currentModel) {
+                    option.selected = true;
+                }
+                selector.appendChild(option);
+            });
+
+            // Handle model change
+            selector.addEventListener('change', (e) => {
+                currentModel = e.target.value;
+                localStorage.setItem('selectedModel', currentModel);
+                console.log('Model changed to:', currentModel);
+            });
+
+            return selector;
+        }
+
         // Theme switching functionality
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.querySelector('.theme-icon');
@@ -173,3 +232,10 @@
         }
 
         themeToggle.addEventListener('click', toggleTheme);
+
+        // Initialize model selector
+        document.addEventListener('DOMContentLoaded', () => {
+            const headerContent = document.querySelector('.header-content');
+            const modelSelector = createModelSelector();
+            headerContent.insertBefore(modelSelector, themeToggle);
+        });
